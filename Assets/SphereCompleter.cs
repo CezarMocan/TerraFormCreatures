@@ -30,7 +30,37 @@ namespace Skeleton {
 		public void generatePathAndMesh() {
 			dfsChains (parentSphere);
 			dfsSplits (parentSphere);
+			unifyMeshes ();
 			//parentSphere.SetActive (false);
+		}
+
+		public void unifyMeshes() {
+			CombineInstance[] combine = new CombineInstance[meshes.Count];
+			int index = 0;
+			foreach (GameObject meshGO in meshes) {
+				MeshFilter mf = meshGO.GetComponent<MeshFilter> ();
+				combine [index].mesh = mf.sharedMesh;
+				combine [index].transform = mf.transform.localToWorldMatrix;
+				meshGO.SetActive (false);
+				index++;
+			}
+
+
+			GameObject newMesh = new GameObject ("parentMesh");
+			newMesh.transform.parent = this.container.transform;
+			newMesh.transform.localPosition = new Vector3 (0, 0, 0);
+			MeshFilter filter = newMesh.AddComponent< MeshFilter > ();
+			filter.mesh.Clear ();
+			filter.mesh.CombineMeshes (combine);
+			newMesh.gameObject.SetActive (true);
+
+			Material material = new Material (Shader.Find ("Diffuse"));
+			MeshRenderer meshRenderer = newMesh.AddComponent<MeshRenderer> ();
+			meshRenderer.material = material;
+
+			for (index = 0; index < meshes.Count; index++) {
+				UnityEngine.Object.Destroy (meshes [index]);
+			}
 		}
 
 		private List<Transform> getProperChildren(GameObject component) {
@@ -73,7 +103,7 @@ namespace Skeleton {
 			// with a corner.
 			if (properChildren.Count == 0)
 				parentCorners = MeshGenerationUtils.generateQuadSection (this.container, component, MeshGenerationUtils.sphereRadius, .5f);
-			else if (component.Equals(this.parentSphere) && properChildren.Count == 1)
+			else if (component.Equals(this.parentSphere))
 				parentCorners = MeshGenerationUtils.generateQuadSection (this.container, component, -MeshGenerationUtils.sphereRadius, .5f);
 			else
 				parentCorners = MeshGenerationUtils.generateQuadSection (this.container, component);				
@@ -96,9 +126,17 @@ namespace Skeleton {
 				List<Vector3[]> meshPoints = generateQuadSections (component, sphereChildren);
 				//Vector3[] parentPoints = 
 
+				List<Vector3> points = new List<Vector3> ();
+				foreach (Vector3[] meshPoint in meshPoints) {
+					points.AddRange (meshPoint);
+				}
+				Mesh m = MeshGenerationUtils.createConvexHullMesh (points);
+				GameObject selection = MeshGenerationUtils.createGOFromMesh("parentMesh", this.container, m);
+				meshes.Add (selection);
+
 				// Create a mesh out of the corner points obtained in generateQuadSections 
-				GameObject mesh = generateMesh (parentSphere, meshPoints);
-				meshes.Add (mesh);
+				//GameObject mesh = generateMesh (parentSphere, meshPoints);
+				//meshes.Add (mesh);
 			} 
 		}
 

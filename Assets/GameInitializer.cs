@@ -11,6 +11,7 @@ public class GameInitializer : MonoBehaviour {
 	public SphereCompleter sc;
 	private bool spheresVisible;
 	private bool meshVisible;
+	private static bool disableUpdate = true;
 	// Use this for initialization
 	void Start () {
 		Debug.Log ("start");
@@ -56,28 +57,28 @@ public class GameInitializer : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		/*
-		removeMesh (this.sc, this.container);
-		if (meshVisible) {
-			sc = new SphereCompleter (container, sphere1);
-			sc.generatePathAndMesh ();
-		}
+		if (!GameInitializer.disableUpdate) {
+			removeMesh (this.sc, this.container);
+			if (meshVisible) {
+				sc = new SphereCompleter (container, sphere1);
+				sc.generatePathAndMesh ();
+			}
 
-		if (Input.GetKeyDown(KeyCode.Z)) {
-			spheresVisible = !spheresVisible;
-			List<Renderer> renderers = new List<Renderer>(sphere1.GetComponentsInChildren<Renderer>());
-			foreach (Renderer r in renderers) {
-				r.enabled = spheresVisible;
+			if (Input.GetKeyDown (KeyCode.Z)) {
+				spheresVisible = !spheresVisible;
+				List<Renderer> renderers = new List<Renderer> (sphere1.GetComponentsInChildren<Renderer> ());
+				foreach (Renderer r in renderers) {
+					r.enabled = spheresVisible;
+				}
+			}
+
+			if (Input.GetKey (KeyCode.RightArrow)) {
+				this.container.transform.Rotate (new Vector3 (0, 2, 0));
+			}
+
+			if (Input.GetKey (KeyCode.LeftArrow)) {
+				this.container.transform.Rotate (new Vector3 (0, -2, 0));
 			}
 		}
-
-		if (Input.GetKey (KeyCode.RightArrow)) {
-			this.container.transform.Rotate (new Vector3 (0, 2, 0));
-		}
-
-		if (Input.GetKey (KeyCode.LeftArrow)) {
-			this.container.transform.Rotate (new Vector3 (0, -2, 0));
-		}
-		*/
 	}
 }
