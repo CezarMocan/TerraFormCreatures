@@ -37,10 +37,11 @@ namespace Skeleton {
 		public void unifyMeshes() {
 			CombineInstance[] combine = new CombineInstance[meshes.Count];
 			int index = 0;
+			Matrix4x4 parentTransform = this.container.transform.worldToLocalMatrix;
 			foreach (GameObject meshGO in meshes) {
 				MeshFilter mf = meshGO.GetComponent<MeshFilter> ();
 				combine [index].mesh = mf.sharedMesh;
-				combine [index].transform = mf.transform.localToWorldMatrix;
+				combine [index].transform = parentTransform * mf.transform.localToWorldMatrix;
 				meshGO.SetActive (false);
 				index++;
 			}
@@ -48,7 +49,7 @@ namespace Skeleton {
 
 			GameObject newMesh = new GameObject ("parentMesh");
 			newMesh.transform.parent = this.container.transform;
-			newMesh.transform.localPosition = new Vector3 (0, 0, 0);
+			newMesh.transform.localPosition = new Vector3 (0, 0, 0) - this.container.transform.position;
 			MeshFilter filter = newMesh.AddComponent< MeshFilter > ();
 			filter.mesh.Clear ();
 			filter.mesh.CombineMeshes (combine);
@@ -60,7 +61,7 @@ namespace Skeleton {
 
 			for (index = 0; index < meshes.Count; index++) {
 				UnityEngine.Object.Destroy (meshes [index]);
-			}
+			}				
 		}
 
 		private List<Transform> getProperChildren(GameObject component) {
@@ -173,10 +174,11 @@ namespace Skeleton {
 			}
 
 			CombineInstance[] combine = new CombineInstance[meshGenerators.Count];
+			Matrix4x4 parentTransform = this.container.transform.worldToLocalMatrix;
 			index = 0;
 			foreach (CubeGeneratorStatic meshGenerator in meshGenerators) {
 				combine [index].mesh = meshGenerator.getMeshFilter ().sharedMesh;
-				combine [index].transform = meshGenerator.getMeshFilter ().transform.localToWorldMatrix;
+				combine [index].transform = parentTransform * meshGenerator.getMeshFilter ().transform.localToWorldMatrix;
 				meshGenerator.getMeshFilter ().gameObject.SetActive (false);
 				index++;
 			}

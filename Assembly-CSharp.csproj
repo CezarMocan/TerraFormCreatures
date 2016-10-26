@@ -59,6 +59,7 @@
      <Compile Include="Assets\MIConvexHull\ConvexHull\ObjectManager.cs" />
      <Compile Include="Assets\MIConvexHull\IVertex.cs" />
      <Compile Include="Assets\MIConvexHull\Properties\AssemblyInfo.cs" />
+     <Compile Include="Assets\MIConvexHull\TestSmoothFIlter.cs" />
      <Compile Include="Assets\MIConvexHull\Triangulation.cs" />
      <Compile Include="Assets\MIConvexHull\Triangulation\DelaunayTrianglationInternal.cs" />
      <Compile Include="Assets\MIConvexHull\Triangulation\DelaunayTriangulation.cs" />
@@ -66,11 +67,19 @@
      <Compile Include="Assets\MIConvexHull\Triangulation\VoronoiEdge.cs" />
      <Compile Include="Assets\MIConvexHull\Triangulation\VoronoiMesh.cs" />
      <Compile Include="Assets\MIConvexHull\Vertex.cs" />
+     <Compile Include="Assets\MathUtils.cs" />
      <Compile Include="Assets\MeshGenerationUtils.cs" />
+     <Compile Include="Assets\Mutation.cs" />
      <Compile Include="Assets\Pendulum.cs" />
      <Compile Include="Assets\Pendulum2D.cs" />
+     <Compile Include="Assets\PendulumMinusZ.cs" />
+     <Compile Include="Assets\PendulumX.cs" />
+     <Compile Include="Assets\PendulumXY.cs" />
+     <Compile Include="Assets\PendulumZ.cs" />
+     <Compile Include="Assets\SmoothFilter.cs" />
      <Compile Include="Assets\Sources\LightningBolt.cs" />
      <Compile Include="Assets\SphereCompleter.cs" />
+     <Compile Include="Assets\Test2SmoothFilter.cs" />
  <Reference Include="UnityEngine.Networking">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
