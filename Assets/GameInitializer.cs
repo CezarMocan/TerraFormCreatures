@@ -15,7 +15,7 @@ public class GameInitializer : MonoBehaviour {
 
 	private bool spheresVisible = false;
 	private bool meshVisible = true;
-	private static bool disableUpdate = false;
+	private static bool disableUpdate = true;
 
 	Dictionary<int, MeshedSkeleton> meshIdToObject;
 
@@ -26,13 +26,14 @@ public class GameInitializer : MonoBehaviour {
 		//skeleton = Resources.Load ("Skeleton2") as GameObject;
 		//skeleton = Resources.Load ("SkeletonTree") as GameObject;
 		//skeleton = Resources.Load ("Trident") as GameObject;
-		GameObject skeleton = Resources.Load ("ArmMotion") as GameObject;
+		//GameObject skeleton = Resources.Load ("ArmMotion") as GameObject;
 		//skeleton = Resources.Load ("HumanoidMotion") as GameObject;
+		GameObject skeleton = Resources.Load ("Arm") as GameObject;
 
 		GameObject container = new GameObject("SkeletonContainer");
 		GameObject sphere1 = (GameObject) Instantiate (skeleton, new Vector3 (0, 0, 0), Quaternion.identity );
 
-		this.mainObject = new MeshedSkeleton(container, sphere1, new Vector3(0, 0, 0), meshIdToObject);
+		this.mainObject = new MeshedSkeleton(container, sphere1, new Vector3(0, 0, 0), meshIdToObject, true);
 
 		meshUp = GameObject.Find("MeshUp").GetComponent<Button>();
 		meshUp.onClick.AddListener( () => {meshUpPress();} );
@@ -52,7 +53,16 @@ public class GameInitializer : MonoBehaviour {
 		this.mutationCount++;
 
 		//Mutation objMutation = new Mutation (this.mainObject.getGameObject(), 0.8f, 0.9f, 0.9f, 20f);
-		Mutation objMutation = new Mutation (this.mainObject.getGameObject());
+		List<GameObject> originals = new List<GameObject>();
+		foreach (MeshedSkeleton m in this.mutants) {
+			if (m.isObjectSelected ())
+				originals.Add (m.getOriginalSkeleton());
+		}
+
+		if (this.mainObject.isObjectSelected ())
+			originals.Add (this.mainObject.getOriginalSkeleton ());
+
+		Mutation objMutation = new Mutation (originals);
 		GameObject localContainer = new GameObject("SkeletonContainer" + this.mutationCount.ToString());
 		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, objMutation.getMutatedObject (), new Vector3 (0, 0, 4 * this.mutationCount), meshIdToObject);
 		mutants.Add (currMutant);
@@ -65,6 +75,7 @@ public class GameInitializer : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+		// Select / De-select objects
 		if (Input.GetMouseButtonDown(0)) {
 			//empty RaycastHit object which raycast puts the hit details into
 			RaycastHit hit;
@@ -77,32 +88,30 @@ public class GameInitializer : MonoBehaviour {
 				MeshedSkeleton selectedSkeleton;
 				if (meshIdToObject.TryGetValue (instanceId, out selectedSkeleton)) {
 					selectedSkeleton.toggleSelected ();
+					selectedSkeleton.updateMesh ();
 				}
-				//freeclup= hit.collider.name;
 			}
 		}
 
-		if (!GameInitializer.disableUpdate) {
-			foreach (MeshedSkeleton m in this.mutants) {
-				m.getSphereCompleter ().removeMeshes ();
+		// Show / hide spheres when pressing Z
+		if (Input.GetKeyDown (KeyCode.Z)) {
+			spheresVisible = !spheresVisible;
+			this.mainObject.toggleSpheresVisibility (spheresVisible);
+			foreach (MeshedSkeleton m in mutants) {
+				m.toggleSpheresVisibility (spheresVisible);
 			}
-			this.mainObject.getSphereCompleter ().removeMeshes ();
+		}
 
+
+		// Animate movement in meshes or not.
+		if (!GameInitializer.disableUpdate) {
 			if (meshVisible) {
 				this.mainObject.updateMesh ();
 				foreach (MeshedSkeleton m in this.mutants) {
 					m.updateMesh ();
 				}
 			}
-
-			if (Input.GetKeyDown (KeyCode.Z)) {
-				spheresVisible = !spheresVisible;
-				this.mainObject.toggleSpheresVisibility (spheresVisible);
-				foreach (MeshedSkeleton m in mutants) {
-					m.toggleSpheresVisibility (spheresVisible);
-				}
-			}
-
+				
 			/*
 			if (Input.GetKey (KeyCode.RightArrow)) {
 				this.container.transform.Rotate (new Vector3 (0, 2, 0));
