@@ -9,6 +9,8 @@ using MeshGeneratorNS;
 namespace Skeleton {
 	public static class MeshGenerationUtils {
 		public static float sphereRadius = 0.5f;
+		public static String FULL_MESH_NAME = "__FULL_MESH";
+		public static String PARTIAL_MESH_NAME = "__PARTIAL_MESH";
 
 		public static GameObject createGOFromMesh(String name, GameObject container, Mesh mesh) {
 			GameObject selection = new GameObject(name);
@@ -18,7 +20,8 @@ namespace Skeleton {
 			MeshFilter meshFilter = (MeshFilter)selection.AddComponent(typeof(MeshFilter));
 
 			meshFilter.mesh = mesh;
-			MeshGenerationUtils.mirrorMesh (meshFilter.mesh);
+			//TODO (cmocan): Don't I need this?!??!?!?!?!?! Looks like it works without...
+			//MeshGenerationUtils.mirrorMesh (meshFilter.mesh);
 			meshFilter.mesh.RecalculateNormals ();
 			meshFilter.mesh.Optimize ();
 
@@ -89,10 +92,14 @@ namespace Skeleton {
 		}
 
 		public static Vector3[] generateQuadSection(GameObject container, GameObject sphere) {
-			return MeshGenerationUtils.generateQuadSection (container, sphere, 0, 1);
+			List <Vector3> quads = new List<Vector3> ();
+			quads.AddRange(MeshGenerationUtils.generateQuadSection (container, sphere, 0, 1, 0));
+			quads.AddRange(MeshGenerationUtils.generateQuadSection (container, sphere, 0, 1, 30));
+			quads.AddRange(MeshGenerationUtils.generateQuadSection (container, sphere, 0, 1, 60));
+			return quads.ToArray ();
 		}
 
-		public static Vector3[] generateQuadSection(GameObject container, GameObject sphere, float yPosition, float scale) {
+		public static Vector3[] generateQuadSection(GameObject container, GameObject sphere, float yPosition, float scale, float rotationY = 0) {
 			GameObject perpendicularQuad = GameObject.CreatePrimitive (PrimitiveType.Quad);
 			perpendicularQuad.name = "__Quad";
 
@@ -121,7 +128,7 @@ namespace Skeleton {
 
 			perpendicularQuad.transform.parent = sphere.transform.parent.gameObject.transform;
 			perpendicularQuad.transform.localRotation = Quaternion.identity;
-			perpendicularQuad.transform.Rotate (new Vector3 (90f - sphere.transform.localEulerAngles.z / 2f, 90f, 0f));
+			perpendicularQuad.transform.Rotate (new Vector3 (90f - sphere.transform.localEulerAngles.z / 2f, 90f + rotationY, 0f));
 
 			perpendicularQuad.transform.parent = sphere.transform;
 			perpendicularQuad.transform.localScale = new Vector3(scale, scale, scale);

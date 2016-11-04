@@ -5,11 +5,11 @@ var speed = 1.0;
 var recalculateNormals = false;
 
 private var baseVertices : Vector3[];
-private var noise : Perlin;
+private var noise : Skeleton.Perlin;
 
 function Start ()
 {
-	noise = new Perlin ();
+	noise = new Skeleton.Perlin ();
 }
 
 function Update () {

@@ -28,12 +28,12 @@ public class GameInitializer : MonoBehaviour {
 		//skeleton = Resources.Load ("Trident") as GameObject;
 		//GameObject skeleton = Resources.Load ("ArmMotion") as GameObject;
 		//skeleton = Resources.Load ("HumanoidMotion") as GameObject;
-		GameObject skeleton = Resources.Load ("Arm") as GameObject;
+		GameObject skeleton = Resources.Load ("Humanoid") as GameObject;
 
 		GameObject container = new GameObject("SkeletonContainer");
 		GameObject sphere1 = (GameObject) Instantiate (skeleton, new Vector3 (0, 0, 0), Quaternion.identity );
 
-		this.mainObject = new MeshedSkeleton(container, sphere1, new Vector3(0, 0, 0), meshIdToObject, true);
+		this.mainObject = new MeshedSkeleton(container, new Vector3(0, 0, 0), sphere1, meshIdToObject, true);
 
 		meshUp = GameObject.Find("MeshUp").GetComponent<Button>();
 		meshUp.onClick.AddListener( () => {meshUpPress();} );
@@ -42,7 +42,7 @@ public class GameInitializer : MonoBehaviour {
 		mutate.onClick.AddListener ( () => {mutatePress(); });
 
 		spheresVisible = true;
-		meshVisible = false;
+		//meshVisible = false;
 
 		//meshIdToObject.Add (this.mainObject.getMeshId (), this.mainObject);
 
@@ -53,18 +53,18 @@ public class GameInitializer : MonoBehaviour {
 		this.mutationCount++;
 
 		//Mutation objMutation = new Mutation (this.mainObject.getGameObject(), 0.8f, 0.9f, 0.9f, 20f);
-		List<GameObject> originals = new List<GameObject>();
+		List<MeshedSkeleton> originals = new List<MeshedSkeleton>();
 		foreach (MeshedSkeleton m in this.mutants) {
 			if (m.isObjectSelected ())
-				originals.Add (m.getOriginalSkeleton());
+				originals.Add (m);
 		}
 
 		if (this.mainObject.isObjectSelected ())
-			originals.Add (this.mainObject.getOriginalSkeleton ());
+			originals.Add (this.mainObject);
 
-		Mutation objMutation = new Mutation (originals);
+		SkeletonMutation skeletonMutation = new SkeletonMutation (originals);
 		GameObject localContainer = new GameObject("SkeletonContainer" + this.mutationCount.ToString());
-		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, objMutation.getMutatedObject (), new Vector3 (0, 0, 4 * this.mutationCount), meshIdToObject);
+		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, new Vector3 (0, 0, 15 * this.mutationCount), skeletonMutation, meshIdToObject, false);
 		mutants.Add (currMutant);
 	}
 
@@ -106,11 +106,12 @@ public class GameInitializer : MonoBehaviour {
 		// Animate movement in meshes or not.
 		if (!GameInitializer.disableUpdate) {
 			if (meshVisible) {
-				this.mainObject.updateMesh ();
+				this.mainObject.updateMeshNoMove ();
 				foreach (MeshedSkeleton m in this.mutants) {
-					m.updateMesh ();
+					m.updateMeshNoMove ();
 				}
 			}
+		}
 				
 			/*
 			if (Input.GetKey (KeyCode.RightArrow)) {
@@ -138,6 +139,5 @@ public class GameInitializer : MonoBehaviour {
 			}	
 			*/
 
-		}
 	}
 }

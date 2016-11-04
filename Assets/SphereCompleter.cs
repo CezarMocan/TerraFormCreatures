@@ -28,7 +28,7 @@ namespace Skeleton {
 		public void removeMeshes() {
 			List<GameObject> children = new List<GameObject> ();
 			foreach (Transform child in this.container.transform)
-				if (child.name.Contains ("parentMesh") || child.name.Contains ("MeshCH"))
+				if (child.name.Contains (MeshGenerationUtils.FULL_MESH_NAME) || child.name.Contains (MeshGenerationUtils.PARTIAL_MESH_NAME))
 					children.Add (child.gameObject);
 
 			foreach (GameObject child in children) {
@@ -57,7 +57,7 @@ namespace Skeleton {
 			}
 
 
-			GameObject newMesh = new GameObject ("parentMesh");
+			GameObject newMesh = new GameObject (MeshGenerationUtils.FULL_MESH_NAME);
 			newMesh.transform.parent = this.container.transform;
 			newMesh.transform.localPosition = new Vector3 (0, 0, 0) - this.container.transform.position;
 			MeshFilter filter = newMesh.AddComponent< MeshFilter > ();
@@ -107,7 +107,7 @@ namespace Skeleton {
 				// Mesh mesh = MeshGenerationUtils.createMesh (points);
 
 				Mesh m = MeshGenerationUtils.createConvexHullMesh (points);
-				GameObject selection = MeshGenerationUtils.createGOFromMesh("MeshCH", this.container, m);
+				GameObject selection = MeshGenerationUtils.createGOFromMesh(MeshGenerationUtils.PARTIAL_MESH_NAME, this.container, m);
 				meshes.Add (selection);
 			} 
 		}
@@ -151,7 +151,7 @@ namespace Skeleton {
 					points.AddRange (meshPoint);
 				}
 				Mesh m = MeshGenerationUtils.createConvexHullMesh (points);
-				GameObject selection = MeshGenerationUtils.createGOFromMesh("parentMesh", this.container, m);
+				GameObject selection = MeshGenerationUtils.createGOFromMesh(MeshGenerationUtils.PARTIAL_MESH_NAME, this.container, m);
 				meshes.Add (selection);
 
 				// Create a mesh out of the corner points obtained in generateQuadSections 
@@ -203,7 +203,7 @@ namespace Skeleton {
 			}
 
 
-			GameObject newMesh = new GameObject ("parentMesh");
+			GameObject newMesh = new GameObject (MeshGenerationUtils.FULL_MESH_NAME);
 			newMesh.transform.parent = this.container.transform;
 			newMesh.transform.localPosition = new Vector3 (0, 0, 0);
 			MeshFilter filter = newMesh.AddComponent< MeshFilter > ();

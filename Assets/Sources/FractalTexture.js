@@ -13,8 +13,8 @@ var scale = 0.09;
 var offsetPos = 0.0;
 
 private var texture : Texture2D;
-private var perlin : Perlin;
-private var fractal : FractalNoise;
+private var perlin : Skeleton.Perlin;
+private var fractal : Skeleton.FractalNoise;
 
 function Start ()
 {
@@ -30,8 +30,8 @@ function Update()
 function Calculate()
 {
 	if (perlin == null)
-		perlin = new Perlin();
-	fractal = new FractalNoise(h, lacunarity, octaves, perlin);
+		perlin = new Skeleton.Perlin();
+	fractal = new Skeleton.FractalNoise(h, lacunarity, octaves, perlin);
 	
 	for (var y = 0;y<height;y++)
 	{

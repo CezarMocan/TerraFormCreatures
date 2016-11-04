@@ -70,15 +70,14 @@
      <Compile Include="Assets\MathUtils.cs" />
      <Compile Include="Assets\MeshGenerationUtils.cs" />
      <Compile Include="Assets\MeshedSkeleton.cs" />
-     <Compile Include="Assets\Mutation.cs" />
      <Compile Include="Assets\Pendulum.cs" />
      <Compile Include="Assets\Pendulum2D.cs" />
      <Compile Include="Assets\PendulumMinusZ.cs" />
      <Compile Include="Assets\PendulumX.cs" />
      <Compile Include="Assets\PendulumXY.cs" />
      <Compile Include="Assets\PendulumZ.cs" />
+     <Compile Include="Assets\SkeletonMutation.cs" />
      <Compile Include="Assets\SmoothFilter.cs" />
-     <Compile Include="Assets\Sources\LightningBolt.cs" />
      <Compile Include="Assets\SphereCompleter.cs" />
      <Compile Include="Assets\Test2SmoothFilter.cs" />
  <Reference Include="UnityEngine.Networking">
