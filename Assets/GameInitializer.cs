@@ -13,13 +13,16 @@ public class GameInitializer : MonoBehaviour {
 
 	MeshedSkeleton mainObject;
 
-	private bool spheresVisible;
-	private bool meshVisible;
+	private bool spheresVisible = false;
+	private bool meshVisible = true;
 	private static bool disableUpdate = false;
+
+	Dictionary<int, MeshedSkeleton> meshIdToObject;
 
 	// Use this for initialization
 	void Start () {
-		Debug.Log ("start");
+		meshIdToObject = new Dictionary<int, MeshedSkeleton> ();
+		mutants = new List<MeshedSkeleton> ();
 		//skeleton = Resources.Load ("Skeleton2") as GameObject;
 		//skeleton = Resources.Load ("SkeletonTree") as GameObject;
 		//skeleton = Resources.Load ("Trident") as GameObject;
@@ -29,7 +32,7 @@ public class GameInitializer : MonoBehaviour {
 		GameObject container = new GameObject("SkeletonContainer");
 		GameObject sphere1 = (GameObject) Instantiate (skeleton, new Vector3 (0, 0, 0), Quaternion.identity );
 
-		this.mainObject = new MeshedSkeleton(container, sphere1, new Vector3(0, 0, 0));
+		this.mainObject = new MeshedSkeleton(container, sphere1, new Vector3(0, 0, 0), meshIdToObject);
 
 		meshUp = GameObject.Find("MeshUp").GetComponent<Button>();
 		meshUp.onClick.AddListener( () => {meshUpPress();} );
@@ -40,7 +43,7 @@ public class GameInitializer : MonoBehaviour {
 		spheresVisible = true;
 		meshVisible = false;
 
-		mutants = new List<MeshedSkeleton> ();
+		//meshIdToObject.Add (this.mainObject.getMeshId (), this.mainObject);
 
 	}
 
@@ -48,9 +51,10 @@ public class GameInitializer : MonoBehaviour {
 		Debug.Log ("mutate");
 		this.mutationCount++;
 
-		Mutation objMutation = new Mutation (this.mainObject.getGameObject(), 0.8f, 0.9f, 0.9f, 20f);
+		//Mutation objMutation = new Mutation (this.mainObject.getGameObject(), 0.8f, 0.9f, 0.9f, 20f);
+		Mutation objMutation = new Mutation (this.mainObject.getGameObject());
 		GameObject localContainer = new GameObject("SkeletonContainer" + this.mutationCount.ToString());
-		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, objMutation.getMutatedObject (), new Vector3 (0, 0, 4 * this.mutationCount));
+		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, objMutation.getMutatedObject (), new Vector3 (0, 0, 4 * this.mutationCount), meshIdToObject);
 		mutants.Add (currMutant);
 	}
 
@@ -60,6 +64,24 @@ public class GameInitializer : MonoBehaviour {
 		
 	// Update is called once per frame
 	void Update () {
+
+		if (Input.GetMouseButtonDown(0)) {
+			//empty RaycastHit object which raycast puts the hit details into
+			RaycastHit hit;
+			//ray shooting out of the camera from where the mouse is
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			if (Physics.Raycast(ray, out hit)) {
+				//print out the name if the raycast hits something
+				int instanceId = hit.transform.gameObject.GetInstanceID();
+				Debug.Log(instanceId);
+				MeshedSkeleton selectedSkeleton;
+				if (meshIdToObject.TryGetValue (instanceId, out selectedSkeleton)) {
+					selectedSkeleton.toggleSelected ();
+				}
+				//freeclup= hit.collider.name;
+			}
+		}
+
 		if (!GameInitializer.disableUpdate) {
 			foreach (MeshedSkeleton m in this.mutants) {
 				m.getSphereCompleter ().removeMeshes ();
@@ -67,9 +89,9 @@ public class GameInitializer : MonoBehaviour {
 			this.mainObject.getSphereCompleter ().removeMeshes ();
 
 			if (meshVisible) {
-				this.mainObject.recomputeSphereCompleter ();
+				this.mainObject.updateMesh ();
 				foreach (MeshedSkeleton m in this.mutants) {
-					m.recomputeSphereCompleter ();
+					m.updateMesh ();
 				}
 			}
 

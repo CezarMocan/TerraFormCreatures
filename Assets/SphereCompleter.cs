@@ -12,15 +12,17 @@ namespace Skeleton {
 		public GameObject container, parentSphere, sphere2;
 		public List<GameObject> meshes;
 		public GameObject completeMesh;
+		private Color color;
 
 		private Dictionary<int, Vector3[]> sphereCrosses;
 
-		public SphereCompleter(GameObject container, GameObject parentSphere) {
+		public SphereCompleter(GameObject container, GameObject parentSphere, Color color) {
 			this.container = container;
 			this.parentSphere = parentSphere;
 			this.sphereCrosses = new Dictionary<int, Vector3[]> ();
 			//TODO: Create just one mesh out of this.
 			this.meshes = new List<GameObject> ();
+			this.color = color;
 		}
 
 		public void removeMeshes() {
@@ -34,10 +36,11 @@ namespace Skeleton {
 			}
 		}
 			
-		public void generatePathAndMesh() {
+		public GameObject generatePathAndMesh() {
 			dfsChains (parentSphere);
 			dfsSplits (parentSphere);
 			unifyMeshes ();
+			return completeMesh;
 			//parentSphere.SetActive (false);
 		}
 
@@ -60,11 +63,18 @@ namespace Skeleton {
 			MeshFilter filter = newMesh.AddComponent< MeshFilter > ();
 			filter.mesh.Clear ();
 			filter.mesh.CombineMeshes (combine);
-			newMesh.gameObject.SetActive (true);
+			filter.mesh.RecalculateBounds ();
 
 			Material material = new Material (Shader.Find ("Diffuse"));
+			material.color = this.color;
 			MeshRenderer meshRenderer = newMesh.AddComponent<MeshRenderer> ();
 			meshRenderer.material = material;
+			//meshRenderer.
+
+			MeshCollider mc = newMesh.AddComponent<MeshCollider> ();
+			mc.sharedMesh = filter.mesh;
+
+			newMesh.gameObject.SetActive (true);
 
 			for (index = 0; index < meshes.Count; index++) {
 				UnityEngine.Object.Destroy (meshes [index]);
