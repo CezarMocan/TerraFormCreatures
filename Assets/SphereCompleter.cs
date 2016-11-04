@@ -10,8 +10,8 @@ using Skeleton;
 namespace Skeleton {
 	public class SphereCompleter {
 		public GameObject container, parentSphere, sphere2;
-		public GameObject newMesh, newMesh2;
 		public List<GameObject> meshes;
+		public GameObject completeMesh;
 
 		private Dictionary<int, Vector3[]> sphereCrosses;
 
@@ -24,7 +24,14 @@ namespace Skeleton {
 		}
 
 		public void removeMeshes() {
-			
+			List<GameObject> children = new List<GameObject> ();
+			foreach (Transform child in this.container.transform)
+				if (child.name.Contains ("parentMesh") || child.name.Contains ("MeshCH"))
+					children.Add (child.gameObject);
+
+			foreach (GameObject child in children) {
+				UnityEngine.Object.Destroy (child);
+			}
 		}
 			
 		public void generatePathAndMesh() {
@@ -61,7 +68,9 @@ namespace Skeleton {
 
 			for (index = 0; index < meshes.Count; index++) {
 				UnityEngine.Object.Destroy (meshes [index]);
-			}				
+			}
+
+			this.completeMesh = newMesh;
 		}
 
 		private List<Transform> getProperChildren(GameObject component) {

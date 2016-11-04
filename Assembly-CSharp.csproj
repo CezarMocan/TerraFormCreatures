@@ -69,6 +69,7 @@
      <Compile Include="Assets\MIConvexHull\Vertex.cs" />
      <Compile Include="Assets\MathUtils.cs" />
      <Compile Include="Assets\MeshGenerationUtils.cs" />
+     <Compile Include="Assets\MeshedSkeleton.cs" />
      <Compile Include="Assets\Mutation.cs" />
      <Compile Include="Assets\Pendulum.cs" />
      <Compile Include="Assets\Pendulum2D.cs" />
