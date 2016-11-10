@@ -15,28 +15,26 @@ namespace Skeleton {
 
 		public MeshedSkeleton(GameObject container, Vector3 positionOnScreen, GameObject gameObject, Dictionary<int, MeshedSkeleton> meshIdToObject, bool isSelected = false, bool isMeshMutated = false) {
 			this.container = container;
-			this.gameObject = gameObject;
+			this.originalSkeleton = gameObject;
+			this.originalSkeleton.SetActive (false);
+			this.originalSkeleton.transform.parent = this.container.transform;
+			this.originalSkeleton.name = "OriginalSkeleton" + this.container.GetInstanceID ().ToString ();
+
 			this.meshIdToObject = meshIdToObject;
 			this.isSelected = isSelected;
 			this.isMeshMutated = isMeshMutated;
 
-			this.originalSkeleton = Object.Instantiate (gameObject);
-			this.originalSkeleton.SetActive (false);
-			this.originalSkeleton.transform.parent = this.container.transform;
-			this.originalSkeleton.name = "OriginalSkeleton" + this.gameObject.GetInstanceID ().ToString ();
+			this.gameObject = (GameObject) Object.Instantiate (this.originalSkeleton, new Vector3 (0, 0, 0), Quaternion.identity, this.container.transform);
+			this.gameObject.SetActive (false);
+			this.gameObject.name = "FilledOutSkeleton" + this.container.GetInstanceID ().ToString ();
 
 			this.container.transform.position = positionOnScreen;
-			this.gameObject.transform.parent = this.container.transform;
-			this.gameObject.transform.localPosition = new Vector3 (0, 0, 0);
-			this.gameObject.transform.localRotation = Quaternion.identity;
-
 			this.sc = null;
 			this.updateMesh ();
 		}
 
 		public MeshedSkeleton(GameObject container, Vector3 positionOnScreen, SkeletonMutation mutation, Dictionary<int, MeshedSkeleton> meshIdToObject, bool isSelected = false):
 		this(container, positionOnScreen, mutation.getMutatedObject(), meshIdToObject, isSelected, true) {
-
 		}
 
 		public void toggleSpheresVisibility(bool spheresVisible) {
@@ -80,7 +78,7 @@ namespace Skeleton {
 			Vector3[] baseVertices = mesh.vertices;
 			Vector3[] vertices = new Vector3[baseVertices.Length];
 
-			float speed = 5.0f;
+			float speed = 1.0f;
 			float scale = .3f;
 			float timex = Time.time * speed + 0.1365143f;
 			float timey = Time.time * speed + 1.21688f;

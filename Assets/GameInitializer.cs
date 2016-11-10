@@ -28,7 +28,8 @@ public class GameInitializer : MonoBehaviour {
 		//skeleton = Resources.Load ("Trident") as GameObject;
 		//GameObject skeleton = Resources.Load ("ArmMotion") as GameObject;
 		//skeleton = Resources.Load ("HumanoidMotion") as GameObject;
-		GameObject skeleton = Resources.Load ("Humanoid") as GameObject;
+		GameObject skeleton = Resources.Load ("HumanoidArmBetter") as GameObject;
+		//GameObject skeleton = Resources.Load ("Arm") as GameObject;
 
 		GameObject container = new GameObject("SkeletonContainer");
 		GameObject sphere1 = (GameObject) Instantiate (skeleton, new Vector3 (0, 0, 0), Quaternion.identity );
@@ -106,9 +107,9 @@ public class GameInitializer : MonoBehaviour {
 		// Animate movement in meshes or not.
 		if (!GameInitializer.disableUpdate) {
 			if (meshVisible) {
-				this.mainObject.updateMeshNoMove ();
+				this.mainObject.updateMesh ();
 				foreach (MeshedSkeleton m in this.mutants) {
-					m.updateMeshNoMove ();
+					m.updateMesh ();
 				}
 			}
 		}

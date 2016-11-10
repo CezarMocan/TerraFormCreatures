@@ -47,7 +47,16 @@ namespace Skeleton {
 				triangles.Add(xxx.IndexOf(face.Vertices[2]));
 			}
 
+			List<Vector2> uvs = new List<Vector2> ();
+
+			for (int i = 0; i < m.vertices.Count(); i++) {
+				float uv1 = m.vertices [i].x;
+				float uv2 = m.vertices [i].z;
+				uvs.Add (new Vector2 (uv1, uv2));
+			}
+
 			m.triangles = triangles.ToArray ();
+			m.uv = uvs.ToArray ();
 			return m;
 		}
 
@@ -184,7 +193,7 @@ namespace Skeleton {
 			}
 
 			// Make child go at the end of the parentSphere's children list, such that completion spheres + child sphere are sorted by Y.
-			childSphere.transform.parent = null;
+			// childSphere.transform.parent = null;
 			childSphere.transform.parent = parentSphere.transform;
 
 			return completionSpheres;

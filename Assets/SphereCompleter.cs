@@ -76,9 +76,11 @@ namespace Skeleton {
 
 			newMesh.gameObject.SetActive (true);
 
+			/*
 			for (index = 0; index < meshes.Count; index++) {
 				UnityEngine.Object.Destroy (meshes [index]);
 			}
+			*/
 
 			this.completeMesh = newMesh;
 		}
