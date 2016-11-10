@@ -16,6 +16,7 @@ public class GameInitializer : MonoBehaviour {
 	private bool spheresVisible = false;
 	private bool meshVisible = true;
 	private static bool disableUpdate = true;
+	private Vector3 containerRotation;
 
 	Dictionary<int, MeshedSkeleton> meshIdToObject;
 
@@ -28,10 +29,13 @@ public class GameInitializer : MonoBehaviour {
 		//skeleton = Resources.Load ("Trident") as GameObject;
 		//GameObject skeleton = Resources.Load ("ArmMotion") as GameObject;
 		//skeleton = Resources.Load ("HumanoidMotion") as GameObject;
-		GameObject skeleton = Resources.Load ("HumanoidArmBetter") as GameObject;
+		//GameObject skeleton = Resources.Load ("HumanoidArmBetter") as GameObject;
 		//GameObject skeleton = Resources.Load ("Arm") as GameObject;
+		GameObject skeleton = Resources.Load ("PigLeg") as GameObject;
 
+		this.containerRotation = new Vector3 (-135, 0, 0);
 		GameObject container = new GameObject("SkeletonContainer");
+		//container.transform.localEulerAngles = (this.containerRotation);
 		GameObject sphere1 = (GameObject) Instantiate (skeleton, new Vector3 (0, 0, 0), Quaternion.identity );
 
 		this.mainObject = new MeshedSkeleton(container, new Vector3(0, 0, 0), sphere1, meshIdToObject, true);
@@ -63,9 +67,10 @@ public class GameInitializer : MonoBehaviour {
 		if (this.mainObject.isObjectSelected ())
 			originals.Add (this.mainObject);
 
-		SkeletonMutation skeletonMutation = new SkeletonMutation (originals);
+		SkeletonMutation skeletonMutation = new SkeletonMutation (originals, 0.4f);
 		GameObject localContainer = new GameObject("SkeletonContainer" + this.mutationCount.ToString());
-		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, new Vector3 (0, 0, 15 * this.mutationCount), skeletonMutation, meshIdToObject, false);
+		//localContainer.transform.localEulerAngles = (this.containerRotation);
+		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, new Vector3 (0, 0, 4 * this.mutationCount), skeletonMutation, meshIdToObject, false);
 		mutants.Add (currMutant);
 	}
 
