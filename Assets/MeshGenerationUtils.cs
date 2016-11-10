@@ -49,14 +49,23 @@ namespace Skeleton {
 
 			List<Vector2> uvs = new List<Vector2> ();
 
+			float maxUv = -100000000f;
+			float minUv = 100000000f;
 			for (int i = 0; i < m.vertices.Count(); i++) {
-				float uv1 = m.vertices [i].x;
-				float uv2 = m.vertices [i].z;
+				float uv1 = (m.vertices [i].x + m.vertices[i].z) / 2f;
+				float uv2 = (m.vertices [i].y + m.vertices[i].x) / 2f;
 				uvs.Add (new Vector2 (uv1, uv2));
+				maxUv = Mathf.Max (maxUv, uv1); maxUv = Mathf.Max (maxUv, uv2);
+				minUv = Mathf.Min (minUv, uv1); minUv = Mathf.Min (minUv, uv2);
+			}
+
+			List<Vector2> normalizedUvs = new List<Vector2> ();
+			foreach (Vector2 uv in uvs) {
+				normalizedUvs.Add(new Vector2((uv.x - minUv) / (maxUv - minUv), (uv.y - minUv) / (maxUv - minUv)));
 			}
 
 			m.triangles = triangles.ToArray ();
-			m.uv = uvs.ToArray ();
+			m.uv = normalizedUvs.ToArray ();
 			return m;
 		}
 
@@ -171,13 +180,15 @@ namespace Skeleton {
 			for (int i = k - 1; i >= 1; i--) {
 				int sizeFactor = i;
 				float currSphereScale = 1.0f * sizeFactor / k * scaleDif + childSphere.transform.localScale.x;
+				float scaleYXRatio = childSphere.transform.localScale.y / childSphere.transform.localScale.x;
+				float scaleZXRatio = childSphere.transform.localScale.z / childSphere.transform.localScale.x;
 				float prevSphereScale = currSphereScale + scaleDif / k;
 				currPos += new Vector3 (0, directionSgn * sphereRadius * (currSphereScale + prevSphereScale), 0);
 				completionSpheres[i] = GameObject.CreatePrimitive (PrimitiveType.Sphere);
 				completionSpheres [i].name = "__Sphere";
 				completionSpheres[i].transform.parent = parentSphere.transform;
 				completionSpheres[i].transform.localPosition = new Vector3 (currPos.x, currPos.y, currPos.z);
-				completionSpheres[i].transform.localScale = new Vector3 (currSphereScale, currSphereScale, currSphereScale);
+				completionSpheres[i].transform.localScale = new Vector3 (currSphereScale, currSphereScale * scaleYXRatio, currSphereScale * scaleZXRatio);
 				completionSpheres[i].transform.localRotation = Quaternion.identity;
 			}
 

@@ -31,7 +31,8 @@ public class GameInitializer : MonoBehaviour {
 		//skeleton = Resources.Load ("HumanoidMotion") as GameObject;
 		//GameObject skeleton = Resources.Load ("HumanoidArmBetter") as GameObject;
 		//GameObject skeleton = Resources.Load ("Arm") as GameObject;
-		GameObject skeleton = Resources.Load ("PigLeg") as GameObject;
+		//GameObject skeleton = Resources.Load ("PigLeg") as GameObject;
+		GameObject skeleton = Resources.Load ("BodyTest2") as GameObject;
 
 		this.containerRotation = new Vector3 (-135, 0, 0);
 		GameObject container = new GameObject("SkeletonContainer");
@@ -70,7 +71,7 @@ public class GameInitializer : MonoBehaviour {
 		SkeletonMutation skeletonMutation = new SkeletonMutation (originals, 0.4f);
 		GameObject localContainer = new GameObject("SkeletonContainer" + this.mutationCount.ToString());
 		//localContainer.transform.localEulerAngles = (this.containerRotation);
-		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, new Vector3 (0, 0, 4 * this.mutationCount), skeletonMutation, meshIdToObject, false);
+		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, new Vector3 (0, 0, 20 * this.mutationCount), skeletonMutation, meshIdToObject, false);
 		mutants.Add (currMutant);
 	}
 
