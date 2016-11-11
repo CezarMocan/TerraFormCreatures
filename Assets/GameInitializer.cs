@@ -11,8 +11,9 @@ public class GameInitializer : MonoBehaviour {
 
 	public int mutationCount;
 	List<MeshedSkeleton> mutants;
+	List<MeshedSkeleton> mainObjects;
 
-	MeshedSkeleton mainObject;
+	//MeshedSkeleton mainObject;
 
 	private bool spheresVisible = false;
 	private bool meshVisible = true;
@@ -22,11 +23,14 @@ public class GameInitializer : MonoBehaviour {
 	private static string[] FOLDERS = new string[]{"Arms", "Legs", "Bodies", "Heads"};
 
 	Dictionary<int, MeshedSkeleton> meshIdToObject;
+	Dictionary<int, int> mutantsCount;
 
 	// Use this for initialization
 	void Start () {
 		meshIdToObject = new Dictionary<int, MeshedSkeleton> ();
+		mutantsCount = new Dictionary<int, int> ();
 		mutants = new List<MeshedSkeleton> ();
+		mainObjects = new List<MeshedSkeleton> ();
 		//skeleton = Resources.Load ("Skeleton2") as GameObject;
 		//skeleton = Resources.Load ("SkeletonTree") as GameObject;
 		//skeleton = Resources.Load ("Trident") as GameObject;
@@ -37,14 +41,30 @@ public class GameInitializer : MonoBehaviour {
 		//GameObject skeleton = Resources.Load ("PigLeg") as GameObject;
 		//GameObject skeleton = Resources.Load ("Generated/OriginalSkeleton-404478") as GameObject;
 		//GameObject skeleton = Resources.Load ("BodyTest3") as GameObject;
-		GameObject skeleton = Resources.Load ("Generated/Animal1") as GameObject;
+		//GameObject skeleton = Resources.Load ("Generated/Animal1") as GameObject;
+		List<GameObject> prefabs = new List<GameObject>() { 
+			Resources.Load ("TestFullBody2") as GameObject,
+			Resources.Load("TestFullBody") as GameObject,
+			Resources.Load ("Generated/Animal1") as GameObject,
+			Resources.Load ("Arm") as GameObject,
+			Resources.Load ("PigLeg") as GameObject
+		};
+		//GameObject skeleton = Resources.Load ("Generated/Bodies/OriginalSkeleton-3482408") as GameObject;
 
-		this.containerRotation = new Vector3 (-135, 0, 0);
-		GameObject container = new GameObject("SkeletonContainer");
-		//container.transform.localEulerAngles = (this.containerRotation);
-		GameObject sphere1 = (GameObject) Instantiate (skeleton, new Vector3 (0, 0, 0), Quaternion.identity );
+		this.containerRotation = new Vector3 (-75, 0, 0);
+		int index = 0;
+		foreach (GameObject prefab in prefabs) {
+			GameObject container = new GameObject("SkeletonContainer" + prefab.GetInstanceID().ToString());
+			//container.transform.Rotate (this.containerRotation);
+			//container.transform.localEulerAngles = (this.containerRotation);
+			GameObject go = (GameObject) Instantiate (prefab, new Vector3 (0, 0, 0), Quaternion.identity );
+			MeshedSkeleton ms = new MeshedSkeleton(container, new Vector3(0, index * 20, 0), go, meshIdToObject, false, false);
+			mainObjects.Add (ms);
+			mutantsCount.Add (ms.getMeshId (), 1);
+			index++;
+		}
 
-		this.mainObject = new MeshedSkeleton(container, new Vector3(0, 0, 0), sphere1, meshIdToObject, true);
+		mainObjects [0].toggleSelected ();
 
 		meshUp = GameObject.Find("MeshUp").GetComponent<Button>();
 		meshUp.onClick.AddListener( () => {meshUpPress();} );
@@ -70,9 +90,11 @@ public class GameInitializer : MonoBehaviour {
 				originals.Add (m);
 		}
 
-		if (this.mainObject.isObjectSelected ())
-			originals.Add (this.mainObject);
-
+		foreach (MeshedSkeleton m in this.mainObjects) {
+			if (m.isObjectSelected ())
+				originals.Add (m);
+		}
+			
 		return originals;
 	}
 
@@ -102,8 +124,15 @@ public class GameInitializer : MonoBehaviour {
 
 		SkeletonMutation skeletonMutation = new SkeletonMutation (originals, 0.2f);
 		GameObject localContainer = new GameObject("SkeletonContainer" + this.mutationCount.ToString());
+		//localContainer.transform.Rotate (this.containerRotation);
+		//localContainer.transform.RotateAround (this.transform.position, Vector3.left, 75);
 		//localContainer.transform.localEulerAngles = (this.containerRotation);
-		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, new Vector3 (0, 0, 6 * this.mutationCount), skeletonMutation, meshIdToObject, false);
+		int currId = originals[0].getMeshId();
+		int cnt = this.mutantsCount[currId];
+		this.mutantsCount.Remove (currId);
+		this.mutantsCount.Add (currId, cnt + 1);  
+		Vector3 positionOnScreen = originals[0].getPositionOnScreen() + new Vector3 (0, 0, 10 * cnt);
+		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, positionOnScreen, skeletonMutation, meshIdToObject, false);
 		mutants.Add (currMutant);
 	}
 
@@ -127,7 +156,6 @@ public class GameInitializer : MonoBehaviour {
 				MeshedSkeleton selectedSkeleton;
 				if (meshIdToObject.TryGetValue (instanceId, out selectedSkeleton)) {
 					selectedSkeleton.toggleSelected ();
-					selectedSkeleton.updateMesh ();
 				}
 			}
 		}
@@ -135,8 +163,11 @@ public class GameInitializer : MonoBehaviour {
 		// Show / hide spheres when pressing Z
 		if (Input.GetKeyDown (KeyCode.Z)) {
 			spheresVisible = !spheresVisible;
-			this.mainObject.toggleSpheresVisibility (spheresVisible);
 			foreach (MeshedSkeleton m in mutants) {
+				m.toggleSpheresVisibility (spheresVisible);
+			}
+
+			foreach (MeshedSkeleton m in mainObjects) {
 				m.toggleSpheresVisibility (spheresVisible);
 			}
 		}
@@ -157,11 +188,22 @@ public class GameInitializer : MonoBehaviour {
 			Camera.main.transform.position -= new Vector3(0.5f, 0f, 0f);
 		}
 
+		if (Input.GetKey (KeyCode.Quote)) {
+			Camera.main.transform.position += new Vector3(0f, 0.5f, 0f);
+		}
+
+		if (Input.GetKey (KeyCode.Slash)) {
+			Camera.main.transform.position -= new Vector3(0f, 0.5f, 0f);
+		}
+
+
 
 		// Animate movement in meshes or not.
 		if (!GameInitializer.disableUpdate) {
 			if (meshVisible) {
-				this.mainObject.updateMesh ();
+				foreach (MeshedSkeleton m in this.mainObjects) {
+					m.updateMesh ();
+				}
 				foreach (MeshedSkeleton m in this.mutants) {
 					m.updateMesh ();
 				}

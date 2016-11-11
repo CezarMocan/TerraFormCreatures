@@ -9,12 +9,14 @@ namespace Skeleton {
 		private Dictionary<int, MeshedSkeleton> meshIdToObject;
 		private bool isSelected;
 		private bool isMeshMutated;
+		private Vector3 positionOnScreen;
 
 		public static Color SELECTED_COLOR = Color.red;
 		public static Color UNSELECTED_COLOR = Color.white;
 
 		public MeshedSkeleton(GameObject container, Vector3 positionOnScreen, GameObject gameObject, Dictionary<int, MeshedSkeleton> meshIdToObject, bool isSelected = false, bool isMeshMutated = false) {
 			this.container = container;
+			this.positionOnScreen = positionOnScreen;
 			this.originalSkeleton = gameObject;
 			this.originalSkeleton.SetActive (false);
 			this.originalSkeleton.transform.parent = this.container.transform;
@@ -28,7 +30,7 @@ namespace Skeleton {
 			this.gameObject.SetActive (false);
 			this.gameObject.name = "FilledOutSkeleton" + this.container.GetInstanceID ().ToString ();
 
-			this.container.transform.position = positionOnScreen;
+			this.container.transform.localPosition = positionOnScreen;
 			this.sc = null;
 			this.updateMesh ();
 		}
@@ -70,9 +72,26 @@ namespace Skeleton {
 				this.meshMutation ();
 			meshIdToObject.Add (this.getMeshId (), this);
 		}
+
+		public void updateMeshColor() {
+			Color color = this.getMeshColor ();
+			if (this.isSelected) {
+				Material material = Resources.Load ("Zebra", typeof(Material)) as Material; //new Material (Shader.Find ("Zebra"));
+				//material.color = MeshedSkeleton.SELECTED_COLOR;
+				MeshRenderer renderer = this.meshGameObject.GetComponent<MeshRenderer> ();
+				renderer.material = material;
+			} else {
+				Material material = new Material (Shader.Find ("Diffuse"));
+				material.color = MeshedSkeleton.UNSELECTED_COLOR;
+				MeshRenderer renderer = this.meshGameObject.GetComponent<MeshRenderer> ();
+				renderer.material = material;
+			}
+		}
 			
 		private void meshMutation() {
+			/*
 			Debug.Log ("mesh mutation");
+
 			Skeleton.Perlin noise = new Skeleton.Perlin ();
 			Mesh mesh = ((MeshFilter) this.meshGameObject.GetComponent<MeshFilter> ()).mesh;
 
@@ -80,7 +99,7 @@ namespace Skeleton {
 			Vector3[] vertices = new Vector3[baseVertices.Length];
 
 			float speed = 1.0f;
-			float scale = .3f;
+			float scale = 1.0f;
 			float timex = Time.time * speed + 0.1365143f;
 			float timey = Time.time * speed + 1.21688f;
 			float timez = Time.time * speed + 2.5564f;
@@ -99,12 +118,14 @@ namespace Skeleton {
 			//if (recalculateNormals)	
 			mesh.RecalculateNormals();
 			mesh.RecalculateBounds();
+			*/
 		}
 
 
 		public void toggleSelected() {
 			Debug.Log("toggle selected");
 			this.isSelected = !this.isSelected;
+			this.updateMeshColor ();
 		}
 
 		public bool isObjectSelected() {
@@ -129,6 +150,10 @@ namespace Skeleton {
 
 		public GameObject getOriginalSkeleton() {
 			return this.originalSkeleton;
+		}
+
+		public Vector3 getPositionOnScreen() {
+			return this.positionOnScreen;
 		}
 
 	}

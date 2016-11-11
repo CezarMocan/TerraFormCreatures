@@ -40,7 +40,7 @@ namespace Skeleton {
 			this.skeletonMutation (this.mutant);
 		}
 
-		public SkeletonMutation(List<MeshedSkeleton> skeletons, float mutationChance = 0.2f, float scaleMutationAmplitude = 0.8f,  float lengthMutationAmplitude = 0.8f, float rotationMutationAmplitude = 30f): 
+		public SkeletonMutation(List<MeshedSkeleton> skeletons, float mutationChance = 0.2f, float scaleMutationAmplitude = 0.2f,  float lengthMutationAmplitude = 0.8f, float rotationMutationAmplitude = 30f): 
 		this(skeletons [0], mutationChance, scaleMutationAmplitude, lengthMutationAmplitude, rotationMutationAmplitude) {
 			this.crossBreeds.AddRange (skeletons.GetRange(1, skeletons.Count - 1));
 		}

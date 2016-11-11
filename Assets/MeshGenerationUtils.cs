@@ -112,8 +112,14 @@ namespace Skeleton {
 		public static Vector3[] generateQuadSection(GameObject container, GameObject sphere) {
 			List <Vector3> quads = new List<Vector3> ();
 			quads.AddRange(MeshGenerationUtils.generateQuadSection (container, sphere, 0, 1, 0));
+			quads.AddRange(MeshGenerationUtils.generateQuadSection (container, sphere, 0, 1, 10));
+			quads.AddRange(MeshGenerationUtils.generateQuadSection (container, sphere, 0, 1, 20));
 			quads.AddRange(MeshGenerationUtils.generateQuadSection (container, sphere, 0, 1, 30));
+			quads.AddRange(MeshGenerationUtils.generateQuadSection (container, sphere, 0, 1, 40));
+			quads.AddRange(MeshGenerationUtils.generateQuadSection (container, sphere, 0, 1, 50));
 			quads.AddRange(MeshGenerationUtils.generateQuadSection (container, sphere, 0, 1, 60));
+			quads.AddRange(MeshGenerationUtils.generateQuadSection (container, sphere, 0, 1, 70));
+			quads.AddRange(MeshGenerationUtils.generateQuadSection (container, sphere, 0, 1, 80));
 			return quads.ToArray ();
 		}
 
