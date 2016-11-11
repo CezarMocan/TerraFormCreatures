@@ -33,9 +33,11 @@ public class GameInitializer : MonoBehaviour {
 		//GameObject skeleton = Resources.Load ("ArmMotion") as GameObject;
 		//skeleton = Resources.Load ("HumanoidMotion") as GameObject;
 		//GameObject skeleton = Resources.Load ("HumanoidArmBetter") as GameObject;
-		GameObject skeleton = Resources.Load ("Arm") as GameObject;
+		//GameObject skeleton = Resources.Load ("Arm") as GameObject;
+		//GameObject skeleton = Resources.Load ("PigLeg") as GameObject;
 		//GameObject skeleton = Resources.Load ("Generated/OriginalSkeleton-404478") as GameObject;
-		//GameObject skeleton = Resources.Load ("BodyTest2") as GameObject;
+		//GameObject skeleton = Resources.Load ("BodyTest3") as GameObject;
+		GameObject skeleton = Resources.Load ("Generated/Animal1") as GameObject;
 
 		this.containerRotation = new Vector3 (-135, 0, 0);
 		GameObject container = new GameObject("SkeletonContainer");
@@ -98,7 +100,7 @@ public class GameInitializer : MonoBehaviour {
 		//Mutation objMutation = new Mutation (this.mainObject.getGameObject(), 0.8f, 0.9f, 0.9f, 20f);
 		List<MeshedSkeleton> originals = this.getSelectedObjects();
 
-		SkeletonMutation skeletonMutation = new SkeletonMutation (originals, 0.4f);
+		SkeletonMutation skeletonMutation = new SkeletonMutation (originals, 0.2f);
 		GameObject localContainer = new GameObject("SkeletonContainer" + this.mutationCount.ToString());
 		//localContainer.transform.localEulerAngles = (this.containerRotation);
 		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, new Vector3 (0, 0, 6 * this.mutationCount), skeletonMutation, meshIdToObject, false);
@@ -137,6 +139,22 @@ public class GameInitializer : MonoBehaviour {
 			foreach (MeshedSkeleton m in mutants) {
 				m.toggleSpheresVisibility (spheresVisible);
 			}
+		}
+
+		if (Input.GetKey (KeyCode.RightArrow)) {
+			Camera.main.transform.position += new Vector3(0f, 0f, 0.2f);
+		}
+
+		if (Input.GetKey (KeyCode.LeftArrow)) {
+			Camera.main.transform.position -= new Vector3(0f, 0f, 0.2f);
+		}
+
+		if (Input.GetKey (KeyCode.UpArrow)) {
+			Camera.main.transform.position += new Vector3(0.5f, 0f, 0f);
+		}
+
+		if (Input.GetKey (KeyCode.DownArrow)) {
+			Camera.main.transform.position -= new Vector3(0.5f, 0f, 0f);
 		}
 
 
