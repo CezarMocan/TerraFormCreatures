@@ -148,6 +148,7 @@ namespace Skeleton {
 			}
 
 			if (UnityEngine.Random.Range (0f, 1f) >= 0.5f) {
+				Debug.Log ("New node");
 				// Add new node with probability 1/2
 				GameObject parent = node.transform.parent.gameObject;
 				GameObject newNode = GameObject.CreatePrimitive (PrimitiveType.Sphere); 
@@ -161,12 +162,12 @@ namespace Skeleton {
 
 				newNode.transform.localScale = (originalNodeScale + new Vector3 (1f, 1f, 1f)) / 2f;
 				newNode.transform.localPosition = new Vector3 (0, originalNodePosition.y, 0);
-				newNode.transform.localEulerAngles = new Vector3 (0, 0, 0.1f);//(node.transform.localEulerAngles / 2f);
+				newNode.transform.localEulerAngles = originalNodeRotation;
 
 				node.transform.parent = newNode.transform;
 				node.transform.localScale = originalNodeScale;
 				node.transform.localPosition = originalNodePosition;
-				node.transform.localEulerAngles = originalNodeRotation;
+				node.transform.localEulerAngles = new Vector3 (0, 0, 0.1f);//-originalNodeRotation;//(node.transform.localEulerAngles / 2f);//originalNodeRotation;
 			} else {
 				// Delete current node with probability 1/2
 				Debug.Log("Delete " + node.name);
@@ -174,6 +175,7 @@ namespace Skeleton {
 					child.parent = node.transform.parent.transform;
 					child.localPosition /= 2f;
 				}
+				node.transform.parent = null;
 				UnityEngine.Object.Destroy (node);
 			}
 		}

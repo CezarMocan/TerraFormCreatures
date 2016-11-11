@@ -72,6 +72,7 @@ namespace Skeleton {
 		}
 			
 		private void meshMutation() {
+			Debug.Log ("mesh mutation");
 			Skeleton.Perlin noise = new Skeleton.Perlin ();
 			Mesh mesh = ((MeshFilter) this.meshGameObject.GetComponent<MeshFilter> ()).mesh;
 
@@ -96,7 +97,7 @@ namespace Skeleton {
 			mesh.vertices = vertices;
 
 			//if (recalculateNormals)	
-				mesh.RecalculateNormals();
+			mesh.RecalculateNormals();
 			mesh.RecalculateBounds();
 		}
 

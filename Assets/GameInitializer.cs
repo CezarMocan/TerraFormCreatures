@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using Skeleton;
@@ -18,6 +19,8 @@ public class GameInitializer : MonoBehaviour {
 	private static bool disableUpdate = true;
 	private Vector3 containerRotation;
 
+	private static string[] FOLDERS = new string[]{"Arms", "Legs", "Bodies", "Heads"};
+
 	Dictionary<int, MeshedSkeleton> meshIdToObject;
 
 	// Use this for initialization
@@ -30,9 +33,9 @@ public class GameInitializer : MonoBehaviour {
 		//GameObject skeleton = Resources.Load ("ArmMotion") as GameObject;
 		//skeleton = Resources.Load ("HumanoidMotion") as GameObject;
 		//GameObject skeleton = Resources.Load ("HumanoidArmBetter") as GameObject;
-		//GameObject skeleton = Resources.Load ("Arm") as GameObject;
-		//GameObject skeleton = Resources.Load ("PigLeg") as GameObject;
-		GameObject skeleton = Resources.Load ("BodyTest2") as GameObject;
+		GameObject skeleton = Resources.Load ("Arm") as GameObject;
+		//GameObject skeleton = Resources.Load ("Generated/OriginalSkeleton-404478") as GameObject;
+		//GameObject skeleton = Resources.Load ("BodyTest2") as GameObject;
 
 		this.containerRotation = new Vector3 (-135, 0, 0);
 		GameObject container = new GameObject("SkeletonContainer");
@@ -47,6 +50,10 @@ public class GameInitializer : MonoBehaviour {
 		mutate = GameObject.Find ("Mutate").GetComponent<Button> ();
 		mutate.onClick.AddListener ( () => {mutatePress(); });
 
+
+		mutate = GameObject.Find ("Save").GetComponent<Button> ();
+		mutate.onClick.AddListener ( () => {savePress(); });
+
 		spheresVisible = true;
 		//meshVisible = false;
 
@@ -54,11 +61,7 @@ public class GameInitializer : MonoBehaviour {
 
 	}
 
-	void mutatePress() {
-		Debug.Log ("mutate");
-		this.mutationCount++;
-
-		//Mutation objMutation = new Mutation (this.mainObject.getGameObject(), 0.8f, 0.9f, 0.9f, 20f);
+	List<MeshedSkeleton> getSelectedObjects() {
 		List<MeshedSkeleton> originals = new List<MeshedSkeleton>();
 		foreach (MeshedSkeleton m in this.mutants) {
 			if (m.isObjectSelected ())
@@ -68,10 +71,37 @@ public class GameInitializer : MonoBehaviour {
 		if (this.mainObject.isObjectSelected ())
 			originals.Add (this.mainObject);
 
+		return originals;
+	}
+
+	void createPrefabs() {
+		List<MeshedSkeleton> selected = this.getSelectedObjects ();
+		Dropdown input = GameObject.Find ("PrefabType").GetComponent<Dropdown> ();
+
+		foreach (MeshedSkeleton m in selected) {
+			//Debug.Log (input.value);
+			string localPath = "Assets/Resources/Generated/" + GameInitializer.FOLDERS[input.value] + "/" + m.getOriginalSkeleton ().name + ".prefab";
+			Object ePrefab = PrefabUtility.CreateEmptyPrefab (localPath);
+			PrefabUtility.ReplacePrefab (m.getOriginalSkeleton (), ePrefab);
+		}
+	}
+
+	void savePress() {
+		Debug.Log ("save");
+		this.createPrefabs ();
+	}
+
+	void mutatePress() {
+		Debug.Log ("mutate");
+		this.mutationCount++;
+
+		//Mutation objMutation = new Mutation (this.mainObject.getGameObject(), 0.8f, 0.9f, 0.9f, 20f);
+		List<MeshedSkeleton> originals = this.getSelectedObjects();
+
 		SkeletonMutation skeletonMutation = new SkeletonMutation (originals, 0.4f);
 		GameObject localContainer = new GameObject("SkeletonContainer" + this.mutationCount.ToString());
 		//localContainer.transform.localEulerAngles = (this.containerRotation);
-		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, new Vector3 (0, 0, 20 * this.mutationCount), skeletonMutation, meshIdToObject, false);
+		MeshedSkeleton currMutant = new MeshedSkeleton (localContainer, new Vector3 (0, 0, 6 * this.mutationCount), skeletonMutation, meshIdToObject, false);
 		mutants.Add (currMutant);
 	}
 
